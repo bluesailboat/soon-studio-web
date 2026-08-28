@@ -1,11 +1,5 @@
 import { Reveal } from "./ui";
 
-const stats = [
-  { k: "2", u: "間", label: "風格獨立錄音棚" },
-  { k: "4", u: "支", label: "最高麥克風配置" },
-  { k: "10", u: "分鐘", label: "新手專人教學" },
-];
-
 export default function Hero() {
   return (
     <section id="top" className="relative min-h-[100svh] overflow-hidden">
@@ -31,11 +25,11 @@ export default function Hero() {
           </Reveal>
 
           <Reveal delay={90}>
-            <h1 className="text-[2.6rem] leading-[1.12] font-black tracking-tight text-cream sm:text-6xl lg:text-[4.4rem]">
+            <h1 className="text-[2rem] leading-[1.2] font-black tracking-tight text-cream xs:text-[2.35rem] sm:text-6xl lg:text-[4.2rem] sm:leading-[1.12]">
               專注說好你的故事
               <span className="mt-2 block">
                 <span className="relative inline-block text-brand-soft">
-                  「順順」
+                  順順
                   <span className="absolute -bottom-1 left-0 h-[3px] w-full rounded bg-brand/70" />
                 </span>
                 成就每個動人細節
@@ -44,42 +38,28 @@ export default function Hero() {
           </Reveal>
 
           <Reveal delay={180}>
-            <p className="mt-8 max-w-xl text-base leading-loose text-cream/70 sm:text-lg">
+            <p className="mt-5 max-w-xl text-sm leading-relaxed text-cream/75 sm:mt-8 sm:text-lg sm:leading-loose">
               台北中山區高質感 Podcast 錄音空間，
-              <br className="hidden sm:block" />
+              <br />
               提供專業設備與錄音師駐點服務。
             </p>
           </Reveal>
 
           <Reveal delay={260}>
-            <div className="mt-11 flex flex-wrap items-center gap-4">
+            <div className="mt-9 flex flex-col items-stretch gap-3 sm:mt-11 sm:flex-row sm:items-center sm:gap-4">
               <a
                 href="#booking"
-                className="group relative overflow-hidden rounded-full bg-brand px-9 py-4 text-base font-bold text-white shadow-2xl shadow-brand/30 transition-transform hover:scale-[1.03]"
+                className="group relative flex items-center justify-center overflow-hidden rounded-full bg-brand px-8 py-3.5 text-center text-base font-bold text-white shadow-2xl shadow-brand/30 transition-transform hover:scale-[1.03] sm:px-9 sm:py-4"
               >
                 <span className="relative z-10">立即預約時段</span>
                 <span className="absolute inset-0 translate-y-full bg-white/15 transition-transform duration-300 group-hover:translate-y-0" />
               </a>
               <a
                 href="#pricing"
-                className="rounded-full border border-cream/25 px-8 py-4 text-base font-medium text-cream/90 backdrop-blur transition-colors hover:border-cream/60 hover:bg-white/5"
+                className="flex items-center justify-center rounded-full border border-cream/25 px-7 py-3.5 text-center text-base font-medium text-cream/90 backdrop-blur transition-colors hover:border-cream/60 hover:bg-white/5 sm:px-8 sm:py-4"
               >
                 查看棚型與價格
               </a>
-            </div>
-          </Reveal>
-
-          <Reveal delay={340}>
-            <div className="mt-16 flex flex-wrap gap-x-12 gap-y-6 border-t border-white/10 pt-8">
-              {stats.map((s) => (
-                <div key={s.label}>
-                  <div className="flex items-baseline gap-1 text-brand-soft">
-                    <span className="text-3xl font-black">{s.k}</span>
-                    <span className="text-sm font-medium">{s.u}</span>
-                  </div>
-                  <div className="mt-1 text-xs tracking-wide text-cream/50">{s.label}</div>
-                </div>
-              ))}
             </div>
           </Reveal>
         </div>

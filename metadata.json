@@ -1,0 +1,6 @@
+{
+  "name": "順順錄音棚 Soon Studio",
+  "description": "台北中山區高質感 Podcast 錄音室預約空間與器材租借網站",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

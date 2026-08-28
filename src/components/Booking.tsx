@@ -1,7 +1,7 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { plans, studios, type PlanKey, type StudioKey } from "../data";
 import { cn } from "../utils/cn";
-import { Hint, Reveal, SectionHeading } from "./ui";
+import { Reveal, SectionHeading } from "./ui";
 
 type Form = {
   name: string;
@@ -34,6 +34,30 @@ const empty: Form = {
   taxId: "",
   note: "",
 };
+
+const TIME_SLOTS = [
+  "09:00",
+  "09:30",
+  "10:00",
+  "10:30",
+  "11:00",
+  "11:30",
+  "12:00",
+  "12:30",
+  "13:00",
+  "13:30",
+  "14:00",
+  "14:30",
+  "15:00",
+  "15:30",
+  "16:00",
+  "16:30",
+  "17:00",
+  "17:30",
+  "18:00",
+  "18:30",
+  "19:00",
+];
 
 const field =
   "w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-cream placeholder:text-cream/30 outline-none transition-colors focus:border-brand focus:bg-white/[0.07]";
@@ -76,7 +100,7 @@ export default function Booking() {
     if (!f.studio) e.studio = "請選擇預約棚型";
     if (!f.plan) e.plan = "請選擇租借方案";
     if (!f.date) e.date = "請選擇預約日期";
-    if (!f.start || !f.end) e.time = "請選擇起訖時間";
+    if (!f.start || !f.end) e.time = "請選擇起訖時間（開放 09:00 – 19:00）";
     else if (hours <= 0) e.time = "結束時間需晚於開始時間";
     if (!f.people.trim()) e.people = "請填寫預計進場人數";
     if (!f.invoice) e.invoice = "請選擇發票開立方式";
@@ -151,7 +175,7 @@ export default function Booking() {
   }
 
   return (
-    <section id="booking" className="relative overflow-hidden bg-ink-2 py-24 sm:py-32">
+    <section id="booking" className="relative overflow-hidden bg-ink-2 py-20 sm:py-32">
       <div className="absolute -bottom-40 -left-32 h-96 w-96 rounded-full bg-brand/10 blur-[130px]" />
       <div className="relative mx-auto max-w-4xl px-5 sm:px-8">
         <SectionHeading
@@ -164,13 +188,13 @@ export default function Booking() {
           <form
             onSubmit={submit}
             noValidate
-            className="mt-14 rounded-[2rem] border border-white/8 bg-white/[0.03] p-6 sm:p-10"
+            className="mt-10 rounded-3xl border border-white/8 bg-white/[0.03] p-5 sm:mt-14 sm:rounded-[2rem] sm:p-10"
           >
             {/* 聯絡資訊 */}
-            <p className="mb-6 text-xs font-bold tracking-[0.3em] text-brand uppercase">
+            <p className="mb-4 text-[11px] font-bold tracking-[0.25em] text-brand uppercase sm:mb-6 sm:text-xs sm:tracking-[0.3em]">
               01 · 聯絡資訊
             </p>
-            <div className="grid gap-5 sm:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-3 sm:gap-5">
               <div data-error={!!errors.name}>
                 <label className={label}>
                   聯絡人姓名 <Required />
@@ -212,10 +236,10 @@ export default function Booking() {
             </div>
 
             {/* 棚型與方案 */}
-            <p className="mt-10 mb-6 text-xs font-bold tracking-[0.3em] text-brand uppercase">
+            <p className="mt-8 mb-4 text-[11px] font-bold tracking-[0.25em] text-brand uppercase sm:mt-10 sm:mb-6 sm:text-xs sm:tracking-[0.3em]">
               02 · 棚型與方案
             </p>
-            <div className="grid gap-6 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
               <div data-error={!!errors.studio}>
                 <label className={label}>
                   選擇預約棚型 <Required />
@@ -227,7 +251,7 @@ export default function Booking() {
                       key={s.key}
                       onClick={() => set("studio", s.key)}
                       className={cn(
-                        "flex w-full items-center justify-between gap-3 rounded-xl border px-4 py-3.5 text-left transition-all",
+                        "flex w-full items-center justify-between gap-3 rounded-xl border px-3.5 py-3 text-left transition-all sm:px-4 sm:py-3.5",
                         f.studio === s.key
                           ? "border-brand bg-brand/12"
                           : "border-white/10 bg-white/[0.03] hover:border-white/25",
@@ -238,10 +262,7 @@ export default function Booking() {
                           {s.name}
                           <span className="ml-2 text-xs font-normal text-cream/45">{s.tag}</span>
                         </span>
-                        <span className="mt-1 block text-xs text-cream/45">{s.hint}</span>
-                      </span>
-                      <span className="shrink-0 text-cream/60">
-                        <Hint text={s.hint} />
+                        <span className="mt-0.5 block text-xs text-cream/45 sm:mt-1">{s.hint}</span>
                       </span>
                     </button>
                   ))}
@@ -260,7 +281,7 @@ export default function Booking() {
                       key={p.key}
                       onClick={() => set("plan", p.key)}
                       className={cn(
-                        "flex w-full items-center justify-between gap-3 rounded-xl border px-4 py-3.5 text-left transition-all",
+                        "flex w-full items-center justify-between gap-3 rounded-xl border px-3.5 py-3 text-left transition-all sm:px-4 sm:py-3.5",
                         f.plan === p.key
                           ? "border-brand bg-brand/12"
                           : "border-white/10 bg-white/[0.03] hover:border-white/25",
@@ -268,10 +289,7 @@ export default function Booking() {
                     >
                       <span>
                         <span className="block text-sm font-bold text-cream">{p.name}</span>
-                        <span className="mt-1 block text-xs text-cream/45">{p.hint}</span>
-                      </span>
-                      <span className="shrink-0 text-cream/60">
-                        <Hint text={p.note} />
+                        <span className="mt-0.5 block text-xs text-cream/45 sm:mt-1">{p.hint}</span>
                       </span>
                     </button>
                   ))}
@@ -281,10 +299,10 @@ export default function Booking() {
             </div>
 
             {/* 時間 */}
-            <p className="mt-10 mb-6 text-xs font-bold tracking-[0.3em] text-brand uppercase">
+            <p className="mt-8 mb-4 text-[11px] font-bold tracking-[0.25em] text-brand uppercase sm:mt-10 sm:mb-6 sm:text-xs sm:tracking-[0.3em]">
               03 · 時間與人數
             </p>
-            <div className="grid gap-5 sm:grid-cols-4" data-error={!!errors.date || !!errors.time}>
+            <div className="grid gap-3.5 sm:grid-cols-4 sm:gap-5" data-error={!!errors.date || !!errors.time}>
               <div>
                 <label className={label}>
                   預約日期 <Required />
@@ -300,25 +318,63 @@ export default function Booking() {
                 <label className={label}>
                   開始時間 <Required />
                 </label>
-                <input
-                  type="time"
-                  step={1800}
-                  className={cn(field, "[color-scheme:dark]", errors.time && "border-red-400/70")}
-                  value={f.start}
-                  onChange={(e) => set("start", e.target.value)}
-                />
+                <div className="relative">
+                  <select
+                    className={cn(
+                      field,
+                      "appearance-none pr-8 cursor-pointer [color-scheme:dark]",
+                      errors.time && "border-red-400/70",
+                      !f.start && "text-cream/30",
+                    )}
+                    value={f.start}
+                    onChange={(e) => set("start", e.target.value)}
+                  >
+                    <option value="" disabled className="bg-ink text-cream/40">
+                      選擇開始時間
+                    </option>
+                    {TIME_SLOTS.slice(0, -1).map((t) => (
+                      <option key={t} value={t} className="bg-ink text-cream">
+                        {t}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-cream/40">
+                    <svg className="h-4 w-4 fill-current" viewBox="0 0 20 20">
+                      <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                    </svg>
+                  </div>
+                </div>
               </div>
               <div>
                 <label className={label}>
                   結束時間 <Required />
                 </label>
-                <input
-                  type="time"
-                  step={1800}
-                  className={cn(field, "[color-scheme:dark]", errors.time && "border-red-400/70")}
-                  value={f.end}
-                  onChange={(e) => set("end", e.target.value)}
-                />
+                <div className="relative">
+                  <select
+                    className={cn(
+                      field,
+                      "appearance-none pr-8 cursor-pointer [color-scheme:dark]",
+                      errors.time && "border-red-400/70",
+                      !f.end && "text-cream/30",
+                    )}
+                    value={f.end}
+                    onChange={(e) => set("end", e.target.value)}
+                  >
+                    <option value="" disabled className="bg-ink text-cream/40">
+                      選擇結束時間
+                    </option>
+                    {TIME_SLOTS.slice(1).map((t) => (
+                      <option key={t} value={t} className="bg-ink text-cream">
+                        {t}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-cream/40">
+                    <svg className="h-4 w-4 fill-current" viewBox="0 0 20 20">
+                      <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                    </svg>
+                  </div>
+                </div>
               </div>
               <div>
                 <label className={label}>
@@ -341,22 +397,22 @@ export default function Booking() {
             )}
 
             {/* 即時預估 */}
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-brand/25 bg-brand/8 px-5 py-4">
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-2.5 rounded-2xl border border-brand/25 bg-brand/8 px-4 py-3.5 sm:mt-6 sm:gap-3 sm:px-5 sm:py-4">
               <span className="text-xs text-cream/60">
                 {rate > 0 && hours > 0
                   ? `NT$ ${rate.toLocaleString()} / 小時 × ${hours} 小時`
                   : "選擇棚型、方案與時段後，即時顯示預估費用"}
               </span>
-              <span className="text-lg font-black text-brand-soft">
+              <span className="text-base font-black text-brand-soft sm:text-lg">
                 預估費用 NT$ {total.toLocaleString()}
               </span>
             </div>
 
             {/* 發票 */}
-            <p className="mt-10 mb-6 text-xs font-bold tracking-[0.3em] text-brand uppercase">
+            <p className="mt-8 mb-4 text-[11px] font-bold tracking-[0.25em] text-brand uppercase sm:mt-10 sm:mb-6 sm:text-xs sm:tracking-[0.3em]">
               04 · 發票開立需求
             </p>
-            <div data-error={!!errors.invoice} className="grid gap-3 sm:grid-cols-2">
+            <div data-error={!!errors.invoice} className="grid gap-2.5 sm:grid-cols-2 sm:gap-3">
               {[
                 { key: "duplicate", name: "二聯式", hint: "一般個人" },
                 { key: "triplicate", name: "三聯式", hint: "公司報帳" },
@@ -366,7 +422,7 @@ export default function Booking() {
                   key={o.key}
                   onClick={() => set("invoice", o.key)}
                   className={cn(
-                    "flex items-center justify-between gap-3 rounded-xl border px-4 py-3.5 text-left transition-all",
+                    "flex items-center justify-between gap-3 rounded-xl border px-3.5 py-3 text-left transition-all sm:px-4 sm:py-3.5",
                     f.invoice === o.key
                       ? "border-brand bg-brand/12"
                       : "border-white/10 bg-white/[0.03] hover:border-white/25",
@@ -374,9 +430,8 @@ export default function Booking() {
                 >
                   <span>
                     <span className="block text-sm font-bold text-cream">{o.name}電子發票</span>
-                    <span className="mt-1 block text-xs text-cream/45">{o.hint}</span>
+                    <span className="mt-0.5 block text-xs text-cream/45 sm:mt-1">{o.hint}</span>
                   </span>
-                  <Hint text={o.hint} />
                 </button>
               ))}
             </div>
@@ -385,11 +440,11 @@ export default function Booking() {
             <div
               className={cn(
                 "grid transition-all duration-500",
-                f.invoice === "triplicate" ? "mt-5 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+                f.invoice === "triplicate" ? "mt-4 grid-rows-[1fr] opacity-100 sm:mt-5" : "grid-rows-[0fr] opacity-0",
               )}
             >
               <div className="overflow-hidden">
-                <div className="grid gap-5 sm:grid-cols-2">
+                <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
                   <div data-error={!!errors.company}>
                     <label className={label}>
                       公司抬頭 <Required />
@@ -423,11 +478,11 @@ export default function Booking() {
             </div>
 
             {/* 備註 */}
-            <p className="mt-10 mb-6 text-xs font-bold tracking-[0.3em] text-brand uppercase">
+            <p className="mt-8 mb-4 text-[11px] font-bold tracking-[0.25em] text-brand uppercase sm:mt-10 sm:mb-6 sm:text-xs sm:tracking-[0.3em]">
               05 · 其他備註事項
             </p>
             <textarea
-              rows={4}
+              rows={3}
               className={cn(field, "resize-none leading-relaxed")}
               value={f.note}
               onChange={(e) => set("note", e.target.value)}
@@ -436,14 +491,14 @@ export default function Booking() {
 
             <button
               type="submit"
-              className="group mt-9 flex w-full items-center justify-center gap-2 rounded-full bg-brand py-4 text-base font-black text-white shadow-xl shadow-brand/25 transition-transform hover:scale-[1.01]"
+              className="group mt-8 flex w-full items-center justify-center gap-2 rounded-full bg-brand py-3.5 text-base font-black text-white shadow-xl shadow-brand/25 transition-transform hover:scale-[1.01] sm:mt-9 sm:py-4"
             >
               送出預約申請
               <span className="transition-transform group-hover:translate-x-1" aria-hidden>
                 →
               </span>
             </button>
-            <p className="mt-4 text-center text-xs text-cream/40">
+            <p className="mt-3.5 text-center text-xs leading-relaxed text-cream/40 sm:mt-4">
               送出後不代表預約完成，實際時段以客服確認回覆為準。
             </p>
           </form>

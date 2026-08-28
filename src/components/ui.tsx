@@ -62,23 +62,28 @@ export function SectionHeading({
     <div className={cn("max-w-2xl", align === "center" && "mx-auto text-center")}>
       <div
         className={cn(
-          "mb-4 inline-flex items-center gap-2 text-xs font-medium tracking-[0.3em] uppercase",
+          "mb-3.5 inline-flex items-center gap-2 text-[11px] font-semibold tracking-[0.25em] uppercase sm:text-xs sm:tracking-[0.3em]",
           dark ? "text-brand" : "text-brand",
         )}
       >
-        <span className="h-px w-8 bg-brand/60" />
+        <span className="h-px w-6 bg-brand/60 sm:w-8" />
         {eyebrow}
       </div>
       <h2
         className={cn(
-          "text-3xl leading-tight font-bold sm:text-4xl md:text-[2.75rem]",
+          "text-[1.75rem] xs:text-[1.95rem] leading-[1.24] font-bold tracking-tight sm:text-4xl md:text-[2.65rem] sm:leading-tight",
           dark ? "text-ink" : "text-cream",
         )}
       >
         {title}
       </h2>
       {desc && (
-        <p className={cn("mt-5 text-base leading-relaxed", dark ? "text-ink/65" : "text-cream/60")}>
+        <p
+          className={cn(
+            "mt-3.5 text-sm leading-relaxed sm:mt-5 sm:text-base sm:leading-relaxed",
+            dark ? "text-ink/65" : "text-cream/65",
+          )}
+        >
           {desc}
         </p>
       )}

@@ -6,7 +6,7 @@ export const studios = [
     key: "A" as StudioKey,
     name: "一棚",
     tag: "多人協作首選",
-    image: "/images/studio-1.jpg",
+    image: "/images/soon1.jpg",
     style: "空間寬敞、專業書牆背景",
     mics: "最高支援 4 支",
     hint: "空間寬敞、書牆背景，最多 4 支麥克風",
