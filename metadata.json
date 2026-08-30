@@ -1,6 +1,6 @@
 {
   "name": "順順錄音棚 Soon Studio",
-  "description": "台北中山區高質感 Podcast 錄音室預約空間與器材租借網站",
+  "description": "台北中山區高質感 Podcast 錄音室。提供頂級 RODE 錄音設備、兩種主題攝影棚空間，支援全線上即時自助預約。",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

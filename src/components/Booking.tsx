@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from "react";
+import { useMemo, useState, useEffect, type FormEvent } from "react";
 import { plans, studios, type PlanKey, type StudioKey } from "../data";
 import { cn } from "../utils/cn";
 import { Reveal, SectionHeading } from "./ui";
@@ -71,6 +71,55 @@ export default function Booking() {
   const [f, setF] = useState<Form>(empty);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [sent, setSent] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    if (sent) {
+      setTimeout(() => setShowModal(true), 10);
+      document.body.style.overflow = "hidden";
+    } else {
+      setShowModal(false);
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [sent]);
+
+  // Booking state
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [busySlots, setBusySlots] = useState<{start: string; end: string}[]>([]);
+
+  useEffect(() => {
+    if (f.date && f.studio) {
+      fetch(`/api/availability?studio=${f.studio}`)
+        .then((res) => res.json())
+        .then((data) => {
+           if (Array.isArray(data)) setBusySlots(data);
+        })
+        .catch((err) => console.error("Failed to fetch calendar", err));
+    } else {
+      setBusySlots([]);
+    }
+  }, [f.date, f.studio]);
+
+  const isSlotAvailable = (time: string, isStart: boolean) => {
+    if (!f.date || busySlots.length === 0) return true;
+    const slotDate = new Date(`${f.date}T${time}:00+08:00`);
+
+    for (const event of busySlots) {
+      if (!event.start || !event.end) continue;
+      const eventStart = new Date(event.start);
+      const eventEnd = new Date(event.end);
+
+      if (isStart) {
+        if (slotDate >= eventStart && slotDate < eventEnd) return false;
+      } else {
+        if (slotDate > eventStart && slotDate <= eventEnd) return false;
+      }
+    }
+    return true;
+  };
 
   const set = (k: keyof Form, v: string) => {
     setF((p) => ({ ...p, [k]: v }));
@@ -112,7 +161,7 @@ export default function Booking() {
     return Object.keys(e).length === 0;
   };
 
-  const submit = (ev: FormEvent) => {
+  const submit = async (ev: FormEvent) => {
     ev.preventDefault();
     if (!validate()) {
       document
@@ -120,43 +169,90 @@ export default function Booking() {
         ?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
-    setSent(true);
+    
+    setIsSubmitting(true);
+    try {
+      const studioName = studios.find((s) => s.key === f.studio)?.name || "";
+      const planName = plans.find((p) => p.key === f.plan)?.name || "";
+
+      const res = await fetch('/api/book', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ...f,
+          studioName,
+          planName
+        })
+      });
+
+      if (!res.ok) {
+        throw new Error('Server error');
+      }
+      
+      setSent(true);
+    } catch (err) {
+      console.error(err);
+      alert("送出失敗，請稍後再試！或直接加入官方 LINE 聯繫預約。");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  if (sent) {
-    const studioName = studios.find((s) => s.key === f.studio)?.name;
-    const planName = plans.find((p) => p.key === f.plan)?.name;
-    return (
-      <section id="booking" className="bg-ink-2 py-24 sm:py-32">
-        <div className="mx-auto max-w-2xl px-5 text-center sm:px-8">
-          <div className="rounded-[2rem] border border-brand/30 bg-white/[0.04] p-10 sm:p-14">
+  const studioName = studios.find((s) => s.key === f.studio)?.name;
+  const planName = plans.find((p) => p.key === f.plan)?.name;
+
+  return (
+    <section id="booking" className="relative overflow-hidden bg-ink-2 py-20 sm:py-32">
+      {/* 成功預約的 Modal 彈窗 */}
+      {sent && (
+        <div
+          className={cn(
+            "fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-500 sm:p-6",
+            showModal ? "opacity-100" : "pointer-events-none opacity-0",
+          )}
+        >
+          <div
+            className="absolute inset-0 bg-ink/80 backdrop-blur-md transition-opacity"
+            onClick={() => {
+              setF(empty);
+              setSent(false);
+            }}
+          />
+          <div
+            className={cn(
+              "relative w-full max-w-md rounded-[2rem] border border-brand/30 bg-ink-2 p-8 text-center shadow-2xl shadow-black/50 transition-all duration-500 sm:p-10",
+              showModal ? "translate-y-0 scale-100" : "translate-y-8 scale-95",
+            )}
+          >
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brand text-3xl text-white shadow-xl shadow-brand/30">
               ✓
             </div>
-            <h3 className="mt-7 text-2xl font-black text-cream">預約申請已送出！</h3>
-            <p className="mt-4 text-sm leading-loose text-cream/60">
+            <h3 className="mt-6 text-2xl font-black text-cream">預約申請已送出！</h3>
+            <p className="mt-3 text-sm leading-relaxed text-cream/70">
               感謝 {f.name} 的預約，我們已收到您的需求。
               <br />
               客服人員將於 1 個工作天內以電話或 Email 與您確認時段。
             </p>
-            <div className="mt-8 space-y-2 rounded-2xl bg-black/25 p-6 text-left text-sm text-cream/75">
+            <div className="mt-8 space-y-2 rounded-2xl bg-black/40 p-5 text-left text-sm text-cream/75 border border-white/5">
               <div className="flex justify-between gap-4">
                 <span className="text-cream/45">預約棚型</span>
-                <span className="font-medium">{studioName}</span>
+                <span className="font-medium text-cream/90">{studioName}</span>
               </div>
               <div className="flex justify-between gap-4">
                 <span className="text-cream/45">租借方案</span>
-                <span className="font-medium">{planName}</span>
+                <span className="font-medium text-cream/90">{planName}</span>
               </div>
               <div className="flex justify-between gap-4">
                 <span className="text-cream/45">日期時間</span>
-                <span className="font-medium">
+                <span className="font-medium text-cream/90">
                   {f.date} {f.start}–{f.end}
                 </span>
               </div>
-              <div className="flex justify-between gap-4 border-t border-white/10 pt-3">
+              <div className="mt-3 flex justify-between gap-4 border-t border-white/10 pt-3">
                 <span className="text-cream/45">預估費用</span>
-                <span className="font-black text-brand-soft">NT$ {total.toLocaleString()}</span>
+                <span className="font-black text-brand">NT$ {total.toLocaleString()}</span>
               </div>
             </div>
             <button
@@ -164,18 +260,14 @@ export default function Booking() {
                 setF(empty);
                 setSent(false);
               }}
-              className="mt-8 rounded-full border border-cream/25 px-7 py-3 text-sm font-medium text-cream/80 transition-colors hover:bg-white/5"
+              className="mt-8 w-full rounded-full bg-brand py-3.5 text-sm font-bold text-white shadow-lg shadow-brand/25 transition-transform hover:scale-[1.02] active:scale-95"
             >
-              再預約一個時段
+              我知道了，再預約另一時段
             </button>
           </div>
         </div>
-      </section>
-    );
-  }
+      )}
 
-  return (
-    <section id="booking" className="relative overflow-hidden bg-ink-2 py-20 sm:py-32">
       <div className="absolute -bottom-40 -left-32 h-96 w-96 rounded-full bg-brand/10 blur-[130px]" />
       <div className="relative mx-auto max-w-4xl px-5 sm:px-8">
         <SectionHeading
@@ -332,11 +424,14 @@ export default function Booking() {
                     <option value="" disabled className="bg-ink text-cream/40">
                       選擇開始時間
                     </option>
-                    {TIME_SLOTS.slice(0, -1).map((t) => (
-                      <option key={t} value={t} className="bg-ink text-cream">
-                        {t}
-                      </option>
-                    ))}
+                    {TIME_SLOTS.slice(0, -1).map((t) => {
+                      const avail = isSlotAvailable(t, true);
+                      return (
+                        <option key={t} value={t} disabled={!avail} className={avail ? "bg-ink text-cream" : "bg-ink text-cream/20"}>
+                          {t} {avail ? "" : "(已被預約)"}
+                        </option>
+                      );
+                    })}
                   </select>
                   <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-cream/40">
                     <svg className="h-4 w-4 fill-current" viewBox="0 0 20 20">
@@ -363,11 +458,14 @@ export default function Booking() {
                     <option value="" disabled className="bg-ink text-cream/40">
                       選擇結束時間
                     </option>
-                    {TIME_SLOTS.slice(1).map((t) => (
-                      <option key={t} value={t} className="bg-ink text-cream">
-                        {t}
-                      </option>
-                    ))}
+                    {TIME_SLOTS.slice(1).map((t) => {
+                      const avail = isSlotAvailable(t, false);
+                      return (
+                        <option key={t} value={t} disabled={!avail} className={avail ? "bg-ink text-cream" : "bg-ink text-cream/20"}>
+                          {t} {avail ? "" : "(已被預約)"}
+                        </option>
+                      );
+                    })}
                   </select>
                   <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-cream/40">
                     <svg className="h-4 w-4 fill-current" viewBox="0 0 20 20">
@@ -491,9 +589,10 @@ export default function Booking() {
 
             <button
               type="submit"
-              className="group mt-8 flex w-full items-center justify-center gap-2 rounded-full bg-brand py-3.5 text-base font-black text-white shadow-xl shadow-brand/25 transition-transform hover:scale-[1.01] sm:mt-9 sm:py-4"
+              disabled={isSubmitting}
+              className="group mt-8 flex w-full items-center justify-center gap-2 rounded-full bg-brand py-3.5 text-base font-black text-white shadow-xl shadow-brand/25 transition-transform hover:scale-[1.01] sm:mt-9 sm:py-4 disabled:opacity-70 disabled:hover:scale-100"
             >
-              送出預約申請
+              {isSubmitting ? "送出中..." : "送出預約申請"}
               <span className="transition-transform group-hover:translate-x-1" aria-hidden>
                 →
               </span>

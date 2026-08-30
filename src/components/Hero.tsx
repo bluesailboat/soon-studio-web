@@ -20,7 +20,7 @@ export default function Hero() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-soft opacity-75" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand-soft" />
               </span>
-              TAIPEI · 中山區 PODCAST STUDIO
+              人生善敗學 PODCAST 指定錄音室
             </div>
           </Reveal>
 

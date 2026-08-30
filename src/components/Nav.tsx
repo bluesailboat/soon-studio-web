@@ -3,7 +3,7 @@ import { cn } from "../utils/cn";
 
 const links = [
   { id: "value", label: "核心優勢" },
-  { id: "pricing", label: "空間與方案" },
+  { id: "pricing", label: "空間方案" },
   { id: "equipment", label: "設備清單" },
   { id: "faq", label: "常見問題" },
   { id: "booking", label: "線上預約" },
