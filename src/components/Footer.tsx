@@ -56,11 +56,11 @@ export default function Footer() {
               <ul className="mt-4 space-y-2 text-xs text-cream/60 sm:mt-5 sm:text-sm">
                 <li className="flex items-center gap-2">
                   <Navigation className="h-3.5 w-3.5 shrink-0 text-brand-soft/80" />
-                  <span>捷運中山站步行約 5 分鐘</span>
+                  <span>捷運中山站 / 善導寺站步行約 10 分鐘</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Navigation className="h-3.5 w-3.5 shrink-0 text-brand-soft/80" />
-                  <span>捷運松江南京站步行約 8 分鐘</span>
+                  <span>捷運松江南京站步行約 15 分鐘</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="flex h-3.5 w-3.5 items-center justify-center rounded-sm bg-brand/20 text-[9px] font-bold text-brand-soft">P</span>
@@ -68,7 +68,7 @@ export default function Footer() {
                 </li>
               </ul>
               <a
-                href="https://maps.google.com/?q=臺北市中山區長安東路一段23號"
+                href="https://maps.app.goo.gl/L5HV7WnSevDjsX277"
                 target="_blank"
                 rel="noreferrer"
                 className="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-brand-soft hover:underline sm:mt-5 sm:text-sm"
