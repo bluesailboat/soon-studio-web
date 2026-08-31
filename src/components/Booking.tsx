@@ -36,8 +36,6 @@ const empty: Form = {
 };
 
 const TIME_SLOTS = [
-  "09:00",
-  "09:30",
   "10:00",
   "10:30",
   "11:00",
@@ -55,8 +53,6 @@ const TIME_SLOTS = [
   "17:00",
   "17:30",
   "18:00",
-  "18:30",
-  "19:00",
 ];
 
 const field =
@@ -148,8 +144,17 @@ export default function Booking() {
     if (!/^\S+@\S+\.\S+$/.test(f.email.trim())) e.email = "請填寫正確的電子信箱";
     if (!f.studio) e.studio = "請選擇預約棚型";
     if (!f.plan) e.plan = "請選擇租借方案";
-    if (!f.date) e.date = "請選擇預約日期";
-    if (!f.start || !f.end) e.time = "請選擇起訖時間（開放 09:00 – 19:00）";
+    if (!f.date) {
+      e.date = "請選擇預約日期";
+    } else {
+      const [y, m, d] = f.date.split("-").map(Number);
+      const selectedDate = new Date(y, m - 1, d);
+      const day = selectedDate.getDay();
+      if (day === 0 || day === 6) {
+        e.date = "僅開放週一至週五預約（營業時間 10:00 – 18:00）";
+      }
+    }
+    if (!f.start || !f.end) e.time = "請選擇起訖時間（開放 10:00 – 18:00）";
     else if (hours <= 0) e.time = "結束時間需晚於開始時間";
     if (!f.people.trim()) e.people = "請填寫預計進場人數";
     if (!f.invoice) e.invoice = "請選擇發票開立方式";
@@ -183,7 +188,8 @@ export default function Booking() {
         body: JSON.stringify({
           ...f,
           studioName,
-          planName
+          planName,
+          total
         })
       });
 
@@ -273,7 +279,15 @@ export default function Booking() {
         <SectionHeading
           eyebrow="Booking"
           title="線上預約表單"
-          desc="填寫以下資訊，我們將於 1 個工作天內回覆確認。急件也歡迎直接加 LINE 洽詢。"
+          desc={
+            <>
+              填寫以下資訊，我們將於 1 個工作天內回覆確認。急件也歡迎直接加{" "}
+              <a href="https://lin.ee/3qxucJc" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">
+                官方 LINE
+              </a>{" "}
+              洽詢。
+            </>
+          }
         />
 
         <Reveal>
@@ -391,9 +405,14 @@ export default function Booking() {
             </div>
 
             {/* 時間 */}
-            <p className="mt-8 mb-4 text-[11px] font-bold tracking-[0.25em] text-brand uppercase sm:mt-10 sm:mb-6 sm:text-xs sm:tracking-[0.3em]">
-              03 · 時間與人數
-            </p>
+            <div className="mt-8 mb-4 flex flex-wrap items-center justify-between gap-2 sm:mt-10 sm:mb-6">
+              <p className="text-[11px] font-bold tracking-[0.25em] text-brand uppercase sm:text-xs sm:tracking-[0.3em]">
+                03 · 時間與人數
+              </p>
+              <span className="rounded-full border border-brand/20 bg-brand/10 px-3 py-1 text-[11px] font-medium text-brand-soft">
+                開放時段：週一至週五 10:00 – 18:00
+              </span>
+            </div>
             <div className="grid gap-3.5 sm:grid-cols-4 sm:gap-5" data-error={!!errors.date || !!errors.time}>
               <div>
                 <label className={label}>
@@ -401,9 +420,24 @@ export default function Booking() {
                 </label>
                 <input
                   type="date"
+                  min={new Date().toISOString().split("T")[0]}
                   className={cn(field, "[color-scheme:dark]", errors.date && "border-red-400/70")}
                   value={f.date}
-                  onChange={(e) => set("date", e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    set("date", val);
+                    if (val) {
+                      const [y, m, d] = val.split("-").map(Number);
+                      const selectedDate = new Date(y, m - 1, d);
+                      const day = selectedDate.getDay();
+                      if (day === 0 || day === 6) {
+                        setErrors((p) => ({
+                          ...p,
+                          date: "僅開放週一至週五預約（營業時間 10:00 – 18:00）",
+                        }));
+                      }
+                    }
+                  }}
                 />
               </div>
               <div>

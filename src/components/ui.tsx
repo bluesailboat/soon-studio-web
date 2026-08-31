@@ -54,7 +54,7 @@ export function SectionHeading({
 }: {
   eyebrow: string;
   title: ReactNode;
-  desc?: string;
+  desc?: ReactNode;
   align?: "center" | "left";
   dark?: boolean;
 }) {

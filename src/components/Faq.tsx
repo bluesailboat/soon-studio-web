@@ -12,7 +12,15 @@ export default function Faq() {
         <SectionHeading
           eyebrow="FAQ"
           title="常見問題解答"
-          desc="還有其他疑問嗎？歡迎透過官方 LINE 直接詢問，我們會盡快回覆。"
+          desc={
+            <>
+              還有其他疑問嗎？歡迎透過{" "}
+              <a href="https://lin.ee/3qxucJc" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">
+                官方 LINE
+              </a>{" "}
+              直接詢問，我們會盡快回覆。
+            </>
+          }
         />
 
         <div className="mt-10 space-y-2.5 sm:mt-14 sm:space-y-3">

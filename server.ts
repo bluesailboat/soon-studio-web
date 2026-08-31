@@ -76,7 +76,7 @@ async function startServer() {
     try {
       const auth = getAuthClient();
       const authClient = await auth.getClient();
-      const { date, start, end, name, phone, email, studio, plan, people, invoice, company, taxId, note, studioName, planName } = req.body;
+      const { date, start, end, name, phone, email, studio, plan, people, invoice, company, taxId, note, studioName, planName, total } = req.body;
       
       const displayInvoice = invoice === 'duplicate' ? '二聯式' : (invoice === 'triplicate' ? '三聯式' : invoice);
       const displayCompany = company ? company.trim() : '';
@@ -85,12 +85,12 @@ async function startServer() {
 
       const sheets = google.sheets({ version: 'v4', auth: authClient as any });
       const row = [
-        date, `${start}-${end}`, name, phone, email, studioName || studio, planName || plan, people, displayInvoice, displayCompany, displayTaxId, displayNote, new Date().toLocaleString("zh-TW", { timeZone: "Asia/Taipei" })
+        date, `${start}-${end}`, name, phone, email, studioName || studio, planName || plan, people, displayInvoice, displayCompany, displayTaxId, displayNote, new Date().toLocaleString("zh-TW", { timeZone: "Asia/Taipei" }), total ? `NT$ ${total}` : ''
       ];
       
       await sheets.spreadsheets.values.append({
         spreadsheetId: SPREADSHEET_ID,
-        range: 'A:M',
+        range: 'A:N',
         valueInputOption: 'USER_ENTERED',
         requestBody: { values: [row] }
       });
@@ -102,6 +102,7 @@ async function startServer() {
         const endTime = new Date(`${date}T${end}:00+08:00`);
 
         let descriptionText = `方案: ${planName || plan}\n電話: ${phone}\n信箱: ${email}\n人數: ${people}\n發票: ${displayInvoice}`;
+        if (total) descriptionText += `\n預估費用: NT$ ${total.toLocaleString()}`;
         if (displayCompany) descriptionText += `\n抬頭: ${displayCompany}`;
         if (displayTaxId) descriptionText += `\n統編: ${displayTaxId}`;
         if (displayNote) descriptionText += `\n備註: ${displayNote}`;

@@ -1,5 +1,6 @@
 import { Clock, ExternalLink, Mail, MapPin, Navigation } from "lucide-react";
 import { Reveal } from "./ui";
+import { QRCodeSVG } from "qrcode.react";
 
 export default function Footer() {
   return (
@@ -18,41 +19,21 @@ export default function Footer() {
               </p>
               <div className="mt-5 flex items-center gap-4 sm:mt-6 sm:gap-5">
                 <div className="grid h-24 w-24 shrink-0 place-items-center rounded-2xl bg-cream p-2 sm:h-28 sm:w-28">
-                  <svg viewBox="0 0 29 29" className="h-full w-full" aria-label="LINE QR Code">
-                    {(() => {
-                      const cells: React.ReactElement[] = [];
-                      const finder = (x: number, y: number) => {
-                        cells.push(
-                          <rect key={`f${x}-${y}`} x={x} y={y} width="7" height="7" fill="#14100d" />,
-                          <rect key={`f2${x}-${y}`} x={x + 1} y={y + 1} width="5" height="5" fill="#f6f1e9" />,
-                          <rect key={`f3${x}-${y}`} x={x + 2} y={y + 2} width="3" height="3" fill="#14100d" />,
-                        );
-                      };
-                      finder(0, 0);
-                      finder(22, 0);
-                      finder(0, 22);
-                      let seed = 7;
-                      for (let y = 0; y < 29; y++) {
-                        for (let x = 0; x < 29; x++) {
-                          const inFinder =
-                            (x < 8 && y < 8) || (x > 20 && y < 8) || (x < 8 && y > 20);
-                          if (inFinder) continue;
-                          seed = (seed * 1103515245 + 12345) % 2147483648;
-                          if ((seed >> 16) % 100 < 45)
-                            cells.push(
-                              <rect key={`c${x}-${y}`} x={x} y={y} width="1" height="1" fill="#14100d" />,
-                            );
-                        }
-                      }
-                      return cells;
-                    })()}
-                  </svg>
+                  <QRCodeSVG
+                    value="https://lin.ee/3qxucJc"
+                    className="h-full w-full"
+                    bgColor="transparent"
+                    fgColor="#14100d"
+                    level="Q"
+                  />
                 </div>
                 <a
-                  href="#booking"
+                  href="https://lin.ee/3qxucJc"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="rounded-full border border-brand/40 bg-brand/10 px-4 py-2 text-xs font-bold text-brand-soft transition-colors hover:bg-brand hover:text-white sm:px-5 sm:py-2.5 sm:text-sm"
                 >
-                  @soonstudio
+                  加入官方帳號
                 </a>
               </div>
             </div>
@@ -114,7 +95,7 @@ export default function Footer() {
               <div className="mt-4 flex items-start gap-2 text-xs leading-relaxed text-cream/55 sm:mt-5 sm:text-sm">
                 <Clock className="mt-0.5 h-4 w-4 shrink-0 text-brand-soft/80" />
                 <span>
-                  營業時間｜週一至週五 09:00 – 19:00
+                  營業時間｜週一至週五 10:00 – 18:00
                   <span className="block text-cream/40">（採預約制，請提前預訂時段）</span>
                 </span>
               </div>

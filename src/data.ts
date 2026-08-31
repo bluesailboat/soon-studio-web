@@ -17,7 +17,7 @@ export const studios = [
     key: "B" as StudioKey,
     name: "二棚",
     tag: "舒適對談空間",
-    image: "/images/studio-2.jpg",
+    image: "/images/soon2.jpg",
     style: "舒適沙發、極佳隔音設計",
     mics: "最高支援 2 支",
     hint: "沙發對談、隔音極佳，最多 2 支麥克風",
